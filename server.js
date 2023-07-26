@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
-import Cards from "./models/dbCards.js";
+import datingRoute from './routes/datingRoute.js'; 
+import Cors from 'cors'
+
 
 //App Config
 const app = express();
@@ -8,6 +10,8 @@ const port = process.env.PORT || 8001;
 const connection_url = 'mongodb://localhost:27017/dating-app'
 
 //Middleware
+app.use(express.json())
+app.use(Cors())
 //DB Config
 
 const connect = async () =>{
@@ -33,29 +37,9 @@ mongoose.connection.on("connected", ()=> {
 	console.log("mongo is connected!")
 })
 //API Endpoints
-app.get("/", (req, res) => res.status(200).send("Hello DatingApp front end"));
+// app.get("/", (req, res) => res.status(200).send("Hello DatingApp front end"));
 
-app.post("/dating/cards", (req, res) => {
-  const dbCard = req.body;
-  Cards.create(dbCard, (err, data) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(201).send(data);
-    }
-  });
-});
-
-app.get("/dating/cards", (req, res) => {
-  Cards.find((err, data) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).send(data);
-    }
-  });
-});
-
+app.use("/dating/cards", datingRoute);
 
 //Listener
 app.listen(port, () => {
